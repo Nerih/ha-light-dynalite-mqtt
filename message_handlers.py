@@ -52,11 +52,15 @@ def handle_ha_brightness_command(topic: str, payload: str, dynalite_map: dict,mq
     log(f"📤 Sending Dynalite Packet → {hex_msg}")
     pub2dynet(type="dynet2", hex_string=hex_msg, pending_responses=pending_responses)
 
-    # Request confirmation
-    confirm = build_request_current_preset(area=area, channel=channel)
-    pub2dynet(type="dynet1", hex_string=confirm, pending_responses=pending_responses)
-    log(f"✅ Confirmation requested for area {area} channel {channel}")
-    
+    # Request confirmation, default ack is False
+    should_ack = dynalite_map.get("areas", {}).get(area, {}).get("ack", False)
+    if should_ack:
+        confirm = build_request_current_preset(area=area, channel=channel)
+        pub2dynet(type="dynet1", hex_string=confirm, pending_responses=pending_responses)
+        log(f"✅ Confirmation requested for area {area} channel {channel}")
+    else:
+        log(f"ℹ️ ACK=False for area {area}, no confirmation requested")
+        
     # Update MQTT state (ahead of confirmation)
 
     if channel is None:

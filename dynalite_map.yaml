@@ -4,6 +4,7 @@ defaults:
 areas:
   10:
     name: "Ground Floor (All)"
+    ack: False
     channels:
       "all": 
         name: "Ground Floor (Master)"
@@ -88,6 +89,221 @@ areas:
         name: "Spot Lights"
       "3": 
         name: "Shelf Lights"
+
+  50:
+    name: "Basement Floor (All)"
+    channels:
+      "all": 
+        name: "Basement Floor (Master)"
+
+  51:
+    name: "Basement Common"
+    channels:
+      "all": 
+        name: "Basement Common (Master)"
+      "1": 
+        name: "Spot Lights"
+      "2": 
+        name: "Cove Lights"
+
+  54:
+    name: "Gym"
+    channels:
+      "all": 
+        name: "Gym (Master)"
+      "1": 
+        name: "Spot Lights"
+      "2": 
+        name: "Cove Lights"
+
+  55:
+    name: "Cinema Room"
+    channels:
+      "all": 
+        name: "Cinema Room (Master)"
+      "1": 
+        name: "Spot Lights"
+      "2": 
+        name: "Cove Lights"
+      "3": 
+        name: "Wall Lights"
+
+  56:
+    name: "Guest Bathroom"
+    channels:
+      "all": 
+        name: "Guest Bathroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Mirror Lights"
+      "3": 
+        name: "Accent Lights"
+
+  57:
+    name: "Guest Bedroom"
+    channels:
+      "all": 
+        name: "Guest Bedroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cove Lights"
+
+
+  30:
+    name: "First Floor (All)"
+    channels:
+      "all": 
+        name: "First Floor (Master)"
+
+  31:
+    name: "First Floor Common"
+    channels:
+      "all": 
+        name: "First Floor (Master)"
+      "1": 
+        name: "Main Lights"
+
+
+
+  32:
+    name: "Art Studio"
+    channels:
+      "all": 
+        name: "Art Studio (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cove Lights"
+
+  33:
+    name: "Art Studio Bathroom"
+    channels:
+      "all": 
+        name: "Art Studio Bathroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Mirror Lights"
+      "3": 
+        name: "Accent Lights"
+
+  34:
+    name: "Family Living"
+    channels:
+      "all": 
+        name: "Family Living (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cove Lights"
+  35:
+    name: "Kids Bedroom"
+    channels:
+      "all": 
+        name: "Kids Bedroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cove Lights"
+
+
+  36:
+    name: "Master Bedroom"
+    channels:
+      "all": 
+        name: "Master Bedroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cove Lights"
+      "3": 
+        name: "Shelf Lights"
+
+  37:
+    name: "Master Wardrobe"
+    channels:
+      "all": 
+        name: "Master Wardrobe (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cove Lights"
+      "3": 
+        name: "Shelf Lights"
+
+  38:
+    name: "Master Bathroom"
+    channels:
+      "all": 
+        name: "Master Bathroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Mirror Lights"
+      "3": 
+        name: "Accent Lights"
+
+  39:
+    name: "Shared Bathroom"
+    channels:
+      "all": 
+        name: "Shared Bathroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Mirror Lights"
+      "3": 
+        name: "Accent Lights"
+
+
+
+  40:
+    name: "First Floor Utility"
+    channels:
+      "all": 
+        name: "First Floor Utility(Master)"
+      "1": 
+        name: "Main Lights"
+
+
+  70:
+    name: "Roof Floor (All)"
+    channels:
+      "all": 
+        name: "Roof Floor (Master)"
+
+  71:
+    name: "Study"
+    channels:
+      "all": 
+        name: "Study (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Cabinet Lights"
+      "3": 
+        name: "Shelf Lights"
+
+  72:
+    name: "Study Bathroom"
+    channels:
+      "all": 
+        name: "Study Bathroom (Master)"
+      "1": 
+        name: "Main Lights"
+      "2": 
+        name: "Mirror Lights"
+      "3": 
+        name: "Accent Lights"
+
+  2:
+    name: "Staircase"
+    channels:
+      "all": 
+        name: "Staircase (Master)"
+
   90:
     name: "Outdoor Lighting (All)"
     channels:
@@ -95,6 +311,87 @@ areas:
         name: "Outdoor (Master)"
         presets: [1, 4]
         levels: [255, 0] 
+
+  91:
+    name: "Garage Lights"
+    channels:
+      "all": 
+        name: "Garage Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+
+  92:
+    name: "Garden Lights"
+    channels:
+      "all": 
+        name: "Garden Lights (Master)"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "1": 
+        name: "Landscape Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "2": 
+        name: "Walkway Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "3": 
+        name: "Entrance Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+
+  93:
+    name: "Pool Lights"
+    channels:
+      "all": 
+        name: "Pool Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+
+  94:
+    name: "Roof Garden"
+    channels:
+      "all": 
+        name: "Roof Garden Lights (Master)"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "1": 
+        name: "Landscape Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "2": 
+        name: "Accent Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+
+  95:
+    name: "Art Studio Balcony"
+    channels:
+      "all": 
+        name: "Art Studio Balcony Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+
+  96:
+    name: "Basement Garden"
+    channels:
+      "all": 
+        name: "Basement Garden Lights (Master)"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "1": 
+        name: "Landscape Lights"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "2": 
+        name: "Front Light"
+        presets: [1, 4]
+        levels: [255, 0] 
+      "3": 
+        name: "Pump Room Service Light"
+        presets: [1, 4]
+        levels: [255, 0] 
+
   201:
     name: "Home Assistant Presets"
     channels:
