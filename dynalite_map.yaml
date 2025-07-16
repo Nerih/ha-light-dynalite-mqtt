@@ -306,6 +306,7 @@ areas:
 
   90:
     name: "Outdoor Lighting (All)"
+    dynet: "dynet1"
     channels:
       "all": 
         name: "Outdoor (Master)"

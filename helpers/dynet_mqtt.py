@@ -70,6 +70,33 @@ def build_area_temperature_body(area: int, join: int, temp: float, device=0xBB, 
         return None
 
 
+def build_area_preset_dynet1(area: int, preset: int, fade: int =50, channel: int = 0xFF,
+                           join: int = 0xFF) -> bytes:
+    """
+    Build raw message body for Dynet1 Opcode 0x11: Fade Channel/Area to Preset.
+
+    Returns:
+        bytes: Raw message body (excluding start frame and checksum).
+    """
+    if preset>0:
+        preset=preset-1
+        
+    try:
+        body_bytes = [
+            0x1C, # Byte 0
+            area,         # Byte 1
+            channel, # Byte 2
+            0X6B, # Byte 3 opcode for Fade Channel/Area to Preset
+            preset, #byte 4
+            fade, # byte 5
+            join,  #  join
+        ]
+        return " ".join(f"{b:02X}" for b in body_bytes)
+
+    except Exception as e:
+        log(f"❌ build_area_preset_dynet1 error: {e}")
+        return None
+
 
 def build_area_preset_body(area: int, preset: int, fade: int =50, channel: int = 0xFFFF,
                            join: int = 0xFF, device: int = 0xBB, box: int = 8) -> bytes:

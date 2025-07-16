@@ -8,7 +8,8 @@ from collections import defaultdict
 
 from helpers.dynet_mqtt import (
     build_area_preset_body,
-    build_request_current_preset
+    build_request_current_preset,
+    build_area_preset_dynet1
 )
 from config import (
     MQTT_HOMEASSISTANT_PREFIX,
@@ -48,11 +49,19 @@ def handle_ha_brightness_command(topic: str, payload: str, dynalite_map: dict,mq
         zero_based_channel = int(str_channel)
         channel = int(str_channel)
 
-    hex_msg = build_area_preset_body(area=area, preset=preset, channel=zero_based_channel)
-    log(f"📤 Sending Dynalite Packet → {hex_msg}")
-    pub2dynet(type="dynet2", hex_string=hex_msg, pending_responses=pending_responses)
+    #TODO check if map says to send as DYNET1 or 2 (some macro/task listeners only support DYNET1)
+    #   specifically "floor all" controls
+    dynet_version = dynalite_map.get("areas", {}).get(area, {}).get("dynet", "dynet2")
 
-    # Request confirmation, default ack is False
+    if dynet_version == "dynet2":
+        hex_msg = build_area_preset_body(area=area, preset=preset, channel=zero_based_channel)
+    else:
+        hex_msg = build_area_preset_dynet1(area=area, preset=preset, channel=channel)
+    
+    log(f"📤 Sending Dynalite Packet → {hex_msg}")
+    pub2dynet(type=dynet_version, hex_string=hex_msg, pending_responses=pending_responses)
+
+    # Request confirmation, default ack is False, dynet version is always 1
     should_ack = dynalite_map.get("areas", {}).get(area, {}).get("ack", False)
     if should_ack:
         confirm = build_request_current_preset(area=area, channel=channel)
