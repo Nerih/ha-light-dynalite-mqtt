@@ -45,6 +45,9 @@ def handle_mqtt_connect(client, userdata, flags, rc):
 
         client.subscribe(f"{MQTT_HOMEASSISTANT_PREFIX}/light/+/+/brightness/set")
         log(f"📡 Subscribed to {MQTT_HOMEASSISTANT_PREFIX}/light/+/+/brightness/set")
+        #for covers
+        client.subscribe(f"{MQTT_HOMEASSISTANT_PREFIX}/cover/+/+/set")
+        log(f"📡 Subscribed to {MQTT_HOMEASSISTANT_PREFIX}/cover/+/+/set")
     except Exception as e:
         log(f"❌ Failed to subscribe: {e}")
 

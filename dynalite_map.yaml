@@ -404,3 +404,17 @@ areas:
         name: "Away"
         presets: [1, 4]
         levels: [255, 0]
+
+  150:
+    name: "BF Guestroom Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Sheer"
+      "2": 
+        name: "Main"
+      "3": 
+        name: "All"

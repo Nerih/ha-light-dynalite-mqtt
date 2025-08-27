@@ -17,6 +17,46 @@ from config import (
 )
 
 
+def handle_ha_cover_command(topic: str, payload: str, dynalite_map: dict,mqtt_client,pending_responses):
+    match = re.search(r"dynet_area_(\d+)/channel_(\d+|all)/", topic)
+    if not match:
+        log(f"❌ Invalid HA brightness topic: {topic}")
+        return
+    area = int(match.group(1))
+    str_channel = match.group(2)
+    str_command = payload.strip().lower()   # e.g. "open", "close", "stop"
+
+    log(f"HA Cover Set → Area: {area}, Channel: {str_channel}, Command: {str_command}")
+
+    area_cfg = dynalite_map.get("areas", {}).get(area)
+    if not area_cfg:
+        log(f"⚠️ Area {area} not found in config — skipping")
+        return
+    
+    # 🔑 direct lookup: payload string is the key
+    preset = area_cfg.get(str_command)
+    if preset is None:
+        log(f"⛔ No mapping for command '{str_command}' in area {area}")
+        return
+
+# work out channel numbers
+    if str_channel == "all":
+        zero_based_channel = 0x0000
+        channel = 0xFF
+    else:
+        zero_based_channel = int(str_channel)
+        channel = int(str_channel)
+
+    dynet_version = area_cfg.get("dynet", "dynet2")
+
+    if dynet_version == "dynet2":
+        hex_msg = build_area_preset_body(area=area, preset=preset, channel=zero_based_channel)
+    else:
+        hex_msg = build_area_preset_dynet1(area=area, preset=preset, channel=channel)
+
+    log(f"📤 Sending Dynalite Packet → {hex_msg} (preset={preset})")
+    pub2dynet(type=dynet_version, hex_string=hex_msg, pending_responses=pending_responses)  
+
 def handle_ha_brightness_command(topic: str, payload: str, dynalite_map: dict,mqtt_client,pending_responses):
     match = re.search(r"dynet_area_(\d+)/channel_(\d+|all)/", topic)
     if not match:
@@ -170,45 +210,64 @@ def handle_dynet_packet(parsed, dynalite_map,mqtt_client):
                 log(f"⛔ Channel {channel} not mapped in area {area}")
                 return
 
-            presets, levels = [
+
+            #if its a cover type, then do something else
+            ha_type = area_cfg.get("type", "light")
+            if ha_type == "somfy-cover" :
+                log(f"⛔ somfy-cover dynet>mqtt is #todo")
+                #check if the preset exists in the values for open/close/stop in dynet_map
+                #otherwise log error and return
+                
+                #check if the channel exists in the map, if its "all or 0", skip with warning, if not found then log error and return
+                
+                #publish the state to mqtt
+                
+                #send a dynet message to check this area/channel for the 2 times over the next 60 seconds (we will pick up the response from dynet seperately in #todo)     
+                
+            else:
+                
+                #entire code block is for "Light type"
+                
+                presets, levels = [
                 dynalite_map["areas"][area]["channels"].get(str(channel), {}).get(k, dynalite_map.get("defaults", {}).get(k, []))
                 for k in ("presets", "levels")
-            ]
+                ]                
+            
 
-            if preset in presets:
-                idx = presets.index(preset)
-                level = levels[idx] if idx < len(levels) else 0
-                topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/light/dynet_area_{area}/channel_{channel}/brightness"
-                mqtt_client.publish(topic_out, level)
-                #publish_if_changed(mqtt_client=mqtt_client,topic=topic_out,brightness=level)
-                log(f"✅ Preset {preset} = Brightness: {round((level/255)*100,0)}% published to {topic_out}")
+                if preset in presets:
+                    idx = presets.index(preset)
+                    level = levels[idx] if idx < len(levels) else 0
+                    topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/light/dynet_area_{area}/channel_{channel}/brightness"
+                    mqtt_client.publish(topic_out, level)
+                    #publish_if_changed(mqtt_client=mqtt_client,topic=topic_out,brightness=level)
+                    log(f"✅ Preset {preset} = Brightness: {round((level/255)*100,0)}% published to {topic_out}")
 
-                if str(channel) == "all":
-                    # Master level already determined above
-                    for ch_str, ch_cfg in area_cfg.get("channels", {}).items():
-                        if ch_str == "all":
-                            continue  # Skip master itself
-                        ch_presets = ch_cfg.get("presets", dynalite_map.get("defaults", {}).get("presets", []))
-                        ch_levels = ch_cfg.get("levels", dynalite_map.get("defaults", {}).get("levels", []))
-                        if ch_levels:
-                            # Find the closest matching level in this channel
-                            closest_level = min(ch_levels, key=lambda lv: abs(lv - level))
-                            level_idx = ch_levels.index(closest_level)
-                        else:
-                            closest_level = 0
-                            level_idx = 0
-                        # Optional: also map back to a preset if needed
-                        ch_preset = ch_presets[level_idx] if level_idx < len(ch_presets) else None
-                        topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/light/dynet_area_{area}/channel_{ch_str}/brightness"
-                        #do not use cache
-                        #publish_if_changed(mqtt_client=mqtt_client,topic=topic_out,brightness=level)                        
-                        mqtt_client.publish(topic_out, closest_level)
-                        log(f"✅ Master preset {preset} → Channel {ch_str} brightness {round((closest_level/255)*100,0)}% published to {topic_out}")
-                        
-                return
+                    if str(channel) == "all":
+                        # Master level already determined above
+                        for ch_str, ch_cfg in area_cfg.get("channels", {}).items():
+                            if ch_str == "all":
+                                continue  # Skip master itself
+                            ch_presets = ch_cfg.get("presets", dynalite_map.get("defaults", {}).get("presets", []))
+                            ch_levels = ch_cfg.get("levels", dynalite_map.get("defaults", {}).get("levels", []))
+                            if ch_levels:
+                                # Find the closest matching level in this channel
+                                closest_level = min(ch_levels, key=lambda lv: abs(lv - level))
+                                level_idx = ch_levels.index(closest_level)
+                            else:
+                                closest_level = 0
+                                level_idx = 0
+                            # Optional: also map back to a preset if needed
+                            ch_preset = ch_presets[level_idx] if level_idx < len(ch_presets) else None
+                            topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/light/dynet_area_{area}/channel_{ch_str}/brightness"
+                            #do not use cache
+                            #publish_if_changed(mqtt_client=mqtt_client,topic=topic_out,brightness=level)                        
+                            mqtt_client.publish(topic_out, closest_level)
+                            log(f"✅ Master preset {preset} → Channel {ch_str} brightness {round((closest_level/255)*100,0)}% published to {topic_out}")
+                            
+                    return
 
-            else:
-                log(f"⛔ Preset: {preset} not found in {presets}")
+                else:
+                    log(f"⛔ Preset: {preset} not found in {presets}")
 
     except Exception as e:
         log(f"❌ Failed to handle Dynet packet: {e}")
