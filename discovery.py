@@ -57,15 +57,30 @@ def publish_discovery(mqtt_client, dynalite_map):
                         base_topic = f"{MQTT_HOMEASSISTANT_PREFIX}/cover/{uid}/{l_uid}"
                         topic = f"{base_topic}/config"
                         #update platform to cover
+                        if "sheer" in light_name.lower():
+                            icon = "mdi:blinds-vertical"
+                            device_class = light.get("device_class", "curtain")
+                        elif "blind" in light_name.lower():
+                            icon = "mdi:blinds"
+                            device_class = light.get("device_class", "blind")
+                        else:
+                            icon = light.get("icon", "mdi:curtains")
+                            device_class = light.get("device_class", "curtain")
+
                         payload = ({
                             "platform": "cover",
                              "name": light_name,
                              "unique_id": f"{uid}_{l_uid}",
                              "availability_topic": "bridges/light_dynalite/status",
                              "retain": False,
-                             "icon": light.get("icon", "mdi:curtains"),
+                             "icon": icon,
                              "command_topic": f"{base_topic}/set",
-                             "device_class": light.get("device_class", "curtain"),
+                             "device_class": device_class,
+                             "state_topic": f"{base_topic}/state",
+                             "state_stopped": "stopped",
+                             "state_open": "open",
+                             "state_closed": "closed",
+                             "optimistic": True,
                             })
                         payload.update(device_id)
                         

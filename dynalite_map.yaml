@@ -416,5 +416,158 @@ areas:
         name: "Sheer"
       "2": 
         name: "Main"
+
+  151:
+    name: "BF Gym Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Sheer"
+      "2": 
+        name: "Blind"
+
+  152:
+    name: "GF Dining Sheers"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Dining & Olive Sheer"
+      "2": 
+        name: "Kitchen & Patio Sheer"
+  153:
+    name: "GF Living Sheers"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Patio Sheer"
+      "2": 
+        name: "Pool Sheer"
       "3": 
-        name: "All"
+        name: "Walkway Sheer"
+
+  154:
+    name: "GF Library Sheers"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Library Sheer"
+      "2": 
+        name: "Chill Area Sheer"
+
+
+
+  155:
+    name: "FF Kids Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "2": 
+        name: "Main"
+      "1": 
+        name: "Sheers"
+
+  156:
+    name: "FF Art Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "2": 
+        name: "Main"
+      "1": 
+        name: "Sheers"
+
+  157:
+    name: "FF Utility Blinds"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Blinds"
+
+  158:
+    name: "FF Master Bedroom Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "2": 
+        name: "Main"
+      "1": 
+        name: "Sheers"
+
+  159:
+    name: "FF Master Wardrobe Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "4": 
+        name: "Blinds"
+      "1": 
+        name: "Sheers"
+
+  160:
+    name: "FF Master Bathroom Blinds"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "2": 
+        name: "Privacy Blinds"
+      "1": 
+        name: "Shaded Blinds"
+
+  161:
+    name: "FF Family Living Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "2": 
+        name: "Main"
+      "1": 
+        name: "Sheers"
+
+  162:
+    name: "RF Study Curtains"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "5": 
+        name: "Blinds"
+      "6": 
+        name: "Sheers"
+
+  164:
+    name: "FF Family Bathroom Blinds"
+    type: "somfy-cover"
+    open: 9
+    stop: 10
+    close: 11
+    channels:
+      "1": 
+        name: "Blinds"

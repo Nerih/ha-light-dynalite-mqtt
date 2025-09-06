@@ -57,6 +57,53 @@ def handle_ha_cover_command(topic: str, payload: str, dynalite_map: dict,mqtt_cl
     log(f"📤 Sending Dynalite Packet → {hex_msg} (preset={preset})")
     pub2dynet(type=dynet_version, hex_string=hex_msg, pending_responses=pending_responses)  
 
+    # ───────────────────────────────────────────────
+    # Somfy — Update MQTT state (ahead of confirmation)
+    # We publish 'open' / 'closed' / 'stopped' to the cover state topic.
+    # If channel is 'all', fan out to each mapped child channel except 'all'.
+    # ───────────────────────────────────────────────
+    if area_cfg.get("type", "light") != "somfy-cover":
+        log(f"ℹ️ Area {area} type is '{area_cfg.get('type')}', skipping cover-state publish")
+        return
+
+    # Map HA command to cover state payload
+    if str_command == "open":
+        cover_state = "open"
+    elif str_command == "close":
+        cover_state = "closed"
+    elif str_command == "stop":
+        cover_state = "stopped"
+    else:
+        cover_state = None
+
+    if cover_state is None:
+        log(f"⚠️ Unknown cover command '{str_command}' — no MQTT state publish")
+        return
+
+    #if str_channel == "all":
+    #    # Fan out to all defined channels except the 'all' master
+    #    ch_map = area_cfg.get("channels", {})
+    #    published_any = False
+    #    for ch_str in ch_map.keys():
+    #        if ch_str == "all":
+    #            continue
+    #        topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/cover/dynet_area_{area}/channel_{ch_str}/state"
+    #        mqtt_client.publish(topic_out, cover_state)
+    #        log(f"✅ Cover state '{cover_state}' published to {topic_out} (fan-out from 'all')")
+    #        published_any = True
+    #    if not published_any:
+    #        log(f"⚠️ Area {area} has no child channels to fan-out cover state")
+    #else:
+    # Validate channel exists before publishing
+    if str_channel not in area_cfg.get("channels", {}):
+        log(f"⛔ Channel {str_channel} not mapped in area {area} — not publishing cover state")
+        return
+    topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/cover/dynet_area_{area}/channel_{str_channel}/state"
+    mqtt_client.publish(topic_out, cover_state)
+    log(f"✅ Cover state '{cover_state}' published to {topic_out}")
+
+
+
 def handle_ha_brightness_command(topic: str, payload: str, dynalite_map: dict,mqtt_client,pending_responses):
     match = re.search(r"dynet_area_(\d+)/channel_(\d+|all)/", topic)
     if not match:
@@ -118,7 +165,7 @@ def handle_ha_brightness_command(topic: str, payload: str, dynalite_map: dict,mq
 
     if channel == 0xFF or channel == 0xFFFF:
         channel = "all"
-    elif isinstance(channel, int) and type == "dynet1":
+    elif isinstance(channel, int) and dynet_version  == "dynet1":
         channel += 1
 
     area_cfg = dynalite_map.get("areas", {}).get(area)
@@ -215,14 +262,44 @@ def handle_dynet_packet(parsed, dynalite_map,mqtt_client):
             ha_type = area_cfg.get("type", "light")
             if ha_type == "somfy-cover" :
                 log(f"⛔ somfy-cover dynet>mqtt is #todo")
-                #check if the preset exists in the values for open/close/stop in dynet_map
-                #otherwise log error and return
                 
-                #check if the channel exists in the map, if its "all or 0", skip with warning, if not found then log error and return
+                # Map presets → cover state using area-level mapping
+                open_preset = area_cfg.get("open")
+                stop_preset = area_cfg.get("stop")
+                close_preset = area_cfg.get("close")                
+                if open_preset is None or stop_preset is None or close_preset is None:
+                    log(f"⛔ somfy-cover area {area} missing open/stop/close mapping — check config")
+                    return                
+
+                # Only handle known cover presets; otherwise ignore
+                if preset not in (open_preset, stop_preset, close_preset):
+                    log(f"ℹ️ somfy-cover area {area} preset {preset} not a cover action (open={open_preset}, stop={stop_preset}, close={close_preset})")
+                    return
+
+                # Channel validation: we don't publish for 'all'
+                if channel in ("all", 0, 0x00, 0xFF, 0xFFFF):
+                    log(f"⚠️ somfy-cover area {area}: channel={channel} is 'all'/broadcast — skipping state publish")
+                    return
                 
-                #publish the state to mqtt
+                # Check if channel exists in mapping
+                if not str(channel) in area_cfg.get("channels", {}):
+                    log(f"⛔ somfy-cover area {area}: channel {channel} not mapped")
+                    return
+
+                # Decide cover state payload
+                if preset == open_preset:
+                    cover_state = "open"
+                elif preset == close_preset:
+                    cover_state = "closed"
+                else:
+                    cover_state = "stopped"
                 
-                #send a dynet message to check this area/channel for the 2 times over the next 60 seconds (we will pick up the response from dynet seperately in #todo)     
+                # Publish to MQTT cover state
+                topic_out = f"{MQTT_HOMEASSISTANT_PREFIX}/cover/dynet_area_{area}/channel_{channel}/state"
+                mqtt_client.publish(topic_out, cover_state)
+                log(f"✅ somfy-cover area {area} ch {channel}: preset {preset} → state '{cover_state}' published to {topic_out}")
+
+                #TODO#send a dynet message to check this area/channel for the 2 times over the next 60 seconds (we will pick up the response from dynet seperately in #todo)     
                 
             else:
                 
